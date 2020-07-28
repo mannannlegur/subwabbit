@@ -198,9 +198,11 @@ class VowpalWabbitProcess(VowpalWabbitBaseModel):
             items_features: Iterable[Any],
             labels: Iterable[float],
             weights: Iterable[Optional[float]],
-            debug_info: Any = None) -> None:
+            debug_info: Any = None,
+            keep_predictions: bool = False) -> None:
         common_line_part = self.formatter.format_common_features(common_features, debug_info=debug_info)
         batch = []
+        predictions = []
         first_pass = True
         _get_item_line_part = self.formatter.format_item_features  # for faster access in for-loop
         _get_vw_line = self.formatter.get_formatted_example  # for faster access in for-loop
@@ -220,7 +222,9 @@ class VowpalWabbitProcess(VowpalWabbitBaseModel):
                         # we have to take care about reading what vowpal tells us
                         # as well. Other way potential next calls to
                         # predict() will fail and deadlocks can occur.
-                        self._get_predictions_from_vowpal(debug_info=debug_info)
+                        batch_predictions = self._get_predictions_from_vowpal(debug_info=debug_info)
+                        if keep_predictions:
+                            predictions += batch_predictions
                 else:
                     first_pass = False
         if batch:
@@ -231,7 +235,9 @@ class VowpalWabbitProcess(VowpalWabbitBaseModel):
                 # we have to take care about reading what vowpal tells us
                 # as well. Other way potential next calls to
                 # predict() will fail and deadlocks can occur.
-                self._get_predictions_from_vowpal(debug_info=debug_info)
+                batch_predictions = self._get_predictions_from_vowpal(debug_info=debug_info)
+                if keep_predictions:
+                    predictions += batch_predictions
         # Get predictions from last batch processed in for-loop
         # Or from batch processed after for-loop,
         #   if we had some items in batch after exiting the loop.
@@ -240,7 +246,11 @@ class VowpalWabbitProcess(VowpalWabbitBaseModel):
         # as well. Other way potential next calls to
         # predict() will fail and deadlocks can occur.
         if not self.write_only and not first_pass:
-            self._get_predictions_from_vowpal(debug_info=debug_info)
+            batch_predictions = self._get_predictions_from_vowpal(debug_info=debug_info)
+            if keep_predictions:
+                predictions += batch_predictions
+        if keep_predictions:
+            return predictions
 
     def explain_vw_line(self, vw_line: str, link_function=False):
         if not self.audit_mode:

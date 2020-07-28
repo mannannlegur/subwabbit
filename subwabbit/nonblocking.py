@@ -257,7 +257,8 @@ class VowpalWabbitNonBlockingProcess(VowpalWabbitBaseModel):
             items_features: Iterable[Any],
             labels: Iterable[float],
             weights: Iterable[Optional[float]],
-            debug_info: Any = None) -> None:
+            debug_info: Any = None,
+            keep_predictions: bool = False) -> None:
         raise NotImplementedError('Please use blocking implementation')
 
     def explain_vw_line(self, vw_line: str, link_function=False):

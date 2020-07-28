@@ -279,7 +279,8 @@ class VowpalWabbitBaseModel(ABC):
             items_features: Iterable[Any],
             labels: Iterable[float],
             weights: Iterable[Optional[float]],
-            debug_info: Any = None
+            debug_info: Any = None,
+            keep_predictions: bool = False
         ) -> None:
         """
         Transform features, label and weight into VW line format and send it to Vowpal.
@@ -289,6 +290,8 @@ class VowpalWabbitBaseModel(ABC):
         :param labels: Iterable with same length as items features with label for each item
         :param weights: Iterable with same length as items features with optional weight for each item
         :param debug_info: Some object that can be filled by information useful for debugging
+        :param keep_predictions: Keep predictions on the train set
+        :return: A list with predictions on the train set if ``keep_predictions`` is ``True``. Otherwise, None
         """
         raise NotImplementedError()
 
