@@ -1,5 +1,9 @@
 # subwabbit
 
+## [2.1.0] - 2020-07-28 18:04 - Andrey Babushkin <andrey.babushkin@firma.seznam.cz>
+### Changed
+- Add `keep_predictions` flag in the `train()` function
+
 ## [2.0.2] - 2020-06-18 15:03 - Jan Seifert <jan.seifert@firma.seznam.cz>
 ### Fixed
 - remove obsolete `mypy-lang` dependency
